@@ -1,0 +1,9 @@
+node_modules
+.vscode
+.vitest
+coverage
+dist/server
+.pnpm-debug.log
+.env
+.env.local
+.env.*.local
