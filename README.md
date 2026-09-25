@@ -47,7 +47,7 @@ A GitHub Actions workflow is included at .github/workflows/ci.yml that runs type
 
 Vercel deployment
 
-This project is ready to deploy to Vercel as a static site. The Vercel configuration is in vercel.json and uses the existing build script to produce static files in dist/public.
+This project is ready to deploy to Vercel as a static site with a serverless contact form endpoint. The Vercel configuration is in vercel.json and uses the existing build script to produce static files in dist/public.
 
 Steps to deploy:
 
@@ -55,10 +55,14 @@ Steps to deploy:
 2. In the Vercel dashboard create a new project and import the repository.
 3. Set the Build Command to: pnpm run build
 4. Set the Output Directory to: dist/public
-5. Add any environment variables used by the app (Vite env variables must be prefixed with VITE_ and set in Vercel's Environment Variables settings).
-6. Deploy — Vercel will run the build and serve the static output.
+5. Add the environment variables below in Vercel's Environment Variables settings:
+   - SITE_URL=https://your-domain.vercel.app
+   - RESEND_API_KEY=your_resend_api_key
+   - RESEND_FROM_EMAIL=Victory Vintage <noreply@your-domain.com>
+   - CONTACT_TO_EMAIL=info@victoryvintage.co.zw
+6. Deploy — Vercel will run the build, serve the static output and expose the /api/contact endpoint.
 
-If you need server-side routes or API endpoints later, add Vercel Serverless Functions under api/ and update vercel.json accordingly.
+The contact form posts to /api/contact and will optionally send a real email via Resend when RESEND_API_KEY is configured. Without that key, the app falls back to a demo-mode confirmation so the site still works locally and in preview deployments.
 
 Contributing
 

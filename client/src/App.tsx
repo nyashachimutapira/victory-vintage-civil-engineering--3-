@@ -129,12 +129,23 @@ const navItems = [
   { label: "Contact", href: "/contact" },
 ];
 
+const legalLinks = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Cookie Policy", href: "/cookie-policy" },
+  { label: "Disclaimer", href: "/disclaimer" },
+];
+
 const pageMeta: Record<string, { title: string; description: string }> = {
   "/": { title: "Victory Vintage Civil Engineering | Construction & Engineering Zimbabwe", description: "Victory Vintage Civil Engineering delivers construction, civil engineering, quantity surveying and project management solutions across Zimbabwe." },
   "/about": { title: "About Victory Vintage Civil Engineering", description: "Learn about Victory Vintage Civil Engineering's approach to quality, reliability, technical expertise and long-term value." },
   "/services": { title: "Construction & Civil Engineering Services | Victory Vintage", description: "Explore professional building construction, civil works, quantity surveying, project management and architectural services." },
   "/projects": { title: "Projects | Victory Vintage Civil Engineering", description: "Explore representative construction and engineering project profiles from Victory Vintage Civil Engineering." },
   "/contact": { title: "Contact Victory Vintage Civil Engineering", description: "Discuss your construction, renovation or civil engineering project with the Victory Vintage team in Zimbabwe." },
+  "/privacy-policy": { title: "Privacy Policy | Victory Vintage Civil Engineering", description: "Read how Victory Vintage Civil Engineering handles personal data and inquiries submitted through the website." },
+  "/terms": { title: "Terms & Conditions | Victory Vintage Civil Engineering", description: "Review the terms and conditions for using the Victory Vintage Civil Engineering website and requesting services." },
+  "/cookie-policy": { title: "Cookie Policy | Victory Vintage Civil Engineering", description: "Learn how cookies are used on the Victory Vintage Civil Engineering website and how to manage your preferences." },
+  "/disclaimer": { title: "Disclaimer | Victory Vintage Civil Engineering", description: "Read the website disclaimer and limitations for project information and communication on the Victory Vintage Civil Engineering site." },
 };
 
 function Logo({ light = false }: { light?: boolean }) {
@@ -161,8 +172,14 @@ function PageMeta() {
   useEffect(() => {
     const meta = pageMeta[location] ?? pageMeta["/"];
     document.title = meta.title;
+
     const description = document.querySelector('meta[name="description"]');
     description?.setAttribute("content", meta.description);
+
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    ogTitle?.setAttribute("content", meta.title);
+    ogDescription?.setAttribute("content", meta.description);
   }, [location]);
   return null;
 }
@@ -221,7 +238,12 @@ function Footer() {
         <div className="footer-column"><span className="footer-label">Capabilities</span><span>Construction</span><span>Civil engineering</span><span>Quantity surveying</span><span>Project management</span></div>
         <div className="footer-column contact-column"><span className="footer-label">Get in touch</span><a href="tel:+263786179717"><Phone /> +263 786 179 717</a><a href="tel:+263716747212"><Phone /> +263 716 747 212</a><a href="mailto:info@victoryvintage.co.zw"><Mail /> info@victoryvintage.co.zw</a><span><MapPin /> Zimbabwe</span></div>
       </div>
-      <div className="container footer-bottom"><span>© 2026 Victory Vintage Civil Engineering. All rights reserved.</span><span>Built for lasting value.</span></div>
+      <div className="container footer-bottom">
+        <span>© 2026 Victory Vintage Civil Engineering. All rights reserved.</span>
+        <div className="footer-legal-links">
+          {legalLinks.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+        </div>
+      </div>
     </footer>
   );
 }
@@ -306,16 +328,108 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
 function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const form = event.currentTarget; if (!form.checkValidity()) { setError("Please complete the required fields before sending your inquiry."); form.reportValidity(); return; } setError(""); setSubmitted(true); form.reset(); };
-  return <><PageHero eyebrow="Contact" title={<>Let's discuss<br /><em>your project.</em></>} body="Whether you're planning a new construction project, renovation or civil engineering project, our team is ready to hear from you." image={images.blueprint} compact /><section className="section-pad contact-page"><div className="container contact-grid"><div className="contact-details"><SectionHeading eyebrow="Start here" title="Bring us the brief." body="Tell us what you are working on and we will get back to you to discuss the right next step." /><div className="contact-detail-list"><a href="tel:+263786179717"><span className="contact-icon"><Phone /></span><span><small>Call us</small><strong>+263 786 179 717</strong></span><ArrowUpRight /></a><a href="tel:+263716747212"><span className="contact-icon"><Phone /></span><span><small>Call us</small><strong>+263 716 747 212</strong></span><ArrowUpRight /></a><a href="mailto:info@victoryvintage.co.zw"><span className="contact-icon"><Mail /></span><span><small>Email</small><strong>info@victoryvintage.co.zw</strong></span><ArrowUpRight /></a><div><span className="contact-icon"><MapPin /></span><span><small>Based in</small><strong>Zimbabwe</strong></span></div></div></div><div className="contact-form-wrap">{submitted ? <div className="form-success"><span className="success-icon"><Check /></span><span className="eyebrow"><span className="eyebrow-line" />Inquiry received</span><h2>Thank you for reaching out.</h2><p>Your message has been captured for this demonstration. A member of the Victory Vintage team will be in touch to discuss your project.</p><button className="button button-outline" onClick={() => setSubmitted(false)}>Send another inquiry <ArrowRight /></button></div> : <form className="contact-form" onSubmit={onSubmit}><div className="form-heading"><span className="eyebrow"><span className="eyebrow-line" />Project inquiry</span><h2>Tell us about the work.</h2></div><div className="form-grid"><label>Full name<input name="name" required placeholder="Your name" /></label><label>Email address<input type="email" name="email" required placeholder="you@company.com" /></label><label>Phone number<input name="phone" placeholder="+263 ..." /></label><label>Project type<select name="type" defaultValue=""><option value="" disabled>Select a service</option><option>Building construction</option><option>Residential building</option><option>Commercial building</option><option>Renovation & extension</option><option>Civil works</option><option>Other</option></select></label><label>Project location<input name="location" placeholder="City / area" /></label><label>Estimated budget<select name="budget" defaultValue=""><option value="" disabled>Select a range</option><option>Under USD 25,000</option><option>USD 25,000 – 75,000</option><option>USD 75,000 – 150,000</option><option>USD 150,000+</option><option>Not sure yet</option></select></label></div><label>Tell us more<textarea name="message" required placeholder="A short overview of your project, timeline or requirements..." rows={5} /></label>{error && <p className="form-error" role="alert">{error}</p>}<button type="submit" className="button button-gold form-submit">Send inquiry <Send /></button><p className="form-note">We respect your details and only use them to respond to your inquiry.</p></form>}</div></div></section></>;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const sanitizeValue = (value: FormDataEntryValue | null) => {
+    if (value == null) return "";
+    return String(value)
+      .replace(/[<>]/g, "")
+      .replace(/javascript:/gi, "")
+      .replace(/on\w+=/gi, "")
+      .trim();
+  };
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    const honeypot = sanitizeValue(data.get("website"));
+    if (honeypot) {
+      setError("Your inquiry could not be submitted.");
+      return;
+    }
+
+    const name = sanitizeValue(data.get("name"));
+    const email = sanitizeValue(data.get("email")).toLowerCase();
+    const phone = sanitizeValue(data.get("phone"));
+    const projectType = sanitizeValue(data.get("type"));
+    const location = sanitizeValue(data.get("location"));
+    const budget = sanitizeValue(data.get("budget"));
+    const message = sanitizeValue(data.get("message"));
+
+    if (!form.checkValidity()) {
+      setError("Please complete the required fields before sending your inquiry.");
+      form.reportValidity();
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please provide a valid email address.");
+      return;
+    }
+
+    if (name.length > 100 || phone.length > 50 || projectType.length > 80 || location.length > 120 || budget.length > 80 || message.length > 2000) {
+      setError("One or more fields are too long for a valid inquiry.");
+      return;
+    }
+
+    const lastSubmittedAt = Number(window.localStorage.getItem("vvce-contact-rate-limit") ?? "0");
+    const now = Date.now();
+    if (now - lastSubmittedAt < 60_000) {
+      setError("Please wait a moment before sending another inquiry.");
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          projectType,
+          location,
+          budget,
+          message,
+        }),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as { message?: string };
+      if (!response.ok) {
+        throw new Error(data.message || "There was a problem sending your inquiry. Please try again.");
+      }
+
+      window.localStorage.setItem("vvce-contact-rate-limit", String(Date.now()));
+      setSubmitted(true);
+      form.reset();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "There was a problem sending your inquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return <><PageHero eyebrow="Contact" title={<>Let's discuss<br /><em>your project.</em></>} body="Whether you're planning a new construction project, renovation or civil engineering project, our team is ready to hear from you." image={images.blueprint} compact /><section className="section-pad contact-page"><div className="container contact-grid"><div className="contact-details"><SectionHeading eyebrow="Start here" title="Bring us the brief." body="Tell us what you are working on and we will get back to you to discuss the right next step." /><div className="contact-detail-list"><a href="tel:+263786179717"><span className="contact-icon"><Phone /></span><span><small>Call us</small><strong>+263 786 179 717</strong></span><ArrowUpRight /></a><a href="tel:+263716747212"><span className="contact-icon"><Phone /></span><span><small>Call us</small><strong>+263 716 747 212</strong></span><ArrowUpRight /></a><a href="mailto:info@victoryvintage.co.zw"><span className="contact-icon"><Mail /></span><span><small>Email</small><strong>info@victoryvintage.co.zw</strong></span><ArrowUpRight /></a><div><span className="contact-icon"><MapPin /></span><span><small>Based in</small><strong>Zimbabwe</strong></span></div></div></div><div className="contact-form-wrap">{submitted ? <div className="form-success" role="status" aria-live="polite"><span className="success-icon"><Check /></span><span className="eyebrow"><span className="eyebrow-line" />Inquiry received</span><h2>Thank you for reaching out.</h2><p>Your inquiry has been sent successfully. A member of the Victory Vintage team will be in touch to discuss your project.</p><button className="button button-outline" onClick={() => setSubmitted(false)}>Send another inquiry <ArrowRight /></button></div> : <form className="contact-form" onSubmit={onSubmit} noValidate><div className="form-heading"><span className="eyebrow"><span className="eyebrow-line" />Project inquiry</span><h2>Tell us about the work.</h2></div><div className="form-grid"><label htmlFor="contact-name">Full name<input id="contact-name" name="name" required maxLength={100} placeholder="Your name" /></label><label htmlFor="contact-email">Email address<input id="contact-email" type="email" name="email" required maxLength={120} placeholder="you@company.com" /></label><label htmlFor="contact-phone">Phone number<input id="contact-phone" name="phone" maxLength={50} placeholder="+263 ..." /></label><label htmlFor="contact-type">Project type<select id="contact-type" name="type" defaultValue="" required><option value="" disabled>Select a service</option><option>Building construction</option><option>Residential building</option><option>Commercial building</option><option>Renovation & extension</option><option>Civil works</option><option>Other</option></select></label><label htmlFor="contact-location">Project location<input id="contact-location" name="location" maxLength={120} placeholder="City / area" /></label><label htmlFor="contact-budget">Estimated budget<select id="contact-budget" name="budget" defaultValue="" required><option value="" disabled>Select a range</option><option>Under USD 25,000</option><option>USD 25,000 – 75,000</option><option>USD 75,000 – 150,000</option><option>USD 150,000+</option><option>Not sure yet</option></select></label></div><label htmlFor="contact-message">Tell us more<textarea id="contact-message" name="message" required maxLength={2000} placeholder="A short overview of your project, timeline or requirements..." rows={5} /></label><input className="form-honeypot" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" /><div className="form-spacer" aria-hidden="true" /><p className="form-note">We respect your details and only use them to respond to your inquiry.</p>{error && <p className="form-error" role="alert" aria-live="assertive">{error}</p>}<button type="submit" className="button button-gold form-submit" disabled={isSubmitting}>{isSubmitting ? "Sending..." : "Send inquiry"} <Send /></button></form>}</div></div></section></>;
 }
 
 function NotFound() {
   return <section className="not-found section-pad"><div className="container"><span className="eyebrow"><span className="eyebrow-line" />Page not found</span><h1>That page has moved.</h1><p>Return to the main site and continue exploring Victory Vintage.</p><ButtonLink href="/">Back to home</ButtonLink></div></section>;
 }
 
+function LegalPage({ title, intro, sections }: { title: string; intro: string; sections: { heading: string; body: string[] }[] }) {
+  return <><PageHero eyebrow="Legal" title={<> {title} </>} body={intro} image={images.blueprint} compact /><section className="section-pad"><div className="container legal-page"><div className="legal-copy">{sections.map((section) => <div key={section.heading} className="legal-block"><h2>{section.heading}</h2>{section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>)}</div></div></section></>;
+}
+
 function App() {
-  return <><ScrollToTop /><PageMeta /><Navbar /><main><Switch><Route path="/" component={Home} /><Route path="/about" component={About} /><Route path="/services" component={Services} /><Route path="/projects" component={Projects} /><Route path="/contact" component={Contact} /><Route component={NotFound} /></Switch></main><Footer /></>;
+  return <><ScrollToTop /><PageMeta /><a href="#main-content" className="skip-link">Skip to content</a><Navbar /><main id="main-content"><Switch><Route path="/" component={Home} /><Route path="/about" component={About} /><Route path="/services" component={Services} /><Route path="/projects" component={Projects} /><Route path="/contact" component={Contact} /><Route path="/privacy-policy" component={() => <LegalPage title="Privacy Policy" intro="This privacy statement explains how Victory Vintage Civil Engineering handles personal information submitted through the website." sections={[{ heading: "Information we collect", body: ["We may collect personal information you provide when contacting us, including your name, email address, phone number, project details and location.", "We also use standard server and browser logs to understand how the website is used and to monitor quality and security."] }, { heading: "How we use it", body: ["We use the information to respond to your inquiry, understand project requirements, and maintain contact with clients and partners.", "We do not sell or rent personal data. We may share information with trusted service providers only when necessary to deliver the website or communications."] }, { heading: "Your rights", body: ["You may request access to, correction of, or deletion of your personal information at any time. Contact us using the details on the Contact page to make such a request."] }, { heading: "Security", body: ["We apply reasonable technical and organizational safeguards to help protect submitted information. No system is completely risk-free, and we encourage you to contact us immediately if you have concerns about the security of your data."] }]} />} /><Route path="/terms" component={() => <LegalPage title="Terms & Conditions" intro="These terms govern the use of the Victory Vintage Civil Engineering website and the information shared with us through it." sections={[{ heading: "Website use", body: ["The website is provided for general information about our company, capabilities and project work. It may be updated at any time without notice.", "You agree to use the website lawfully and not to misuse or interfere with the site or its services."] }, { heading: "Project enquiries", body: ["Any project enquiry submitted through the website is a request for information and does not create a contract until both parties agree to proceed.", "We may contact you using the details supplied to discuss your project, requirements and next steps."] }, { heading: "Liability", body: ["We aim to keep the website accurate and useful, but we do not guarantee that all information is free from errors or omissions. We are not liable for indirect, incidental or consequential losses arising from use of the website."] }]} />} /><Route path="/cookie-policy" component={() => <LegalPage title="Cookie Policy" intro="This website uses cookies and similar technologies to support the experience and understand how visitors use the site." sections={[{ heading: "What cookies are used", body: ["We may use analytics or essential cookies to understand how visitors use the website and to improve performance and usability.", "Cookies may help remember simple site preferences and support measurement of traffic and engagement."] }, { heading: "How to manage cookies", body: ["Most browsers allow you to accept, block or delete cookies. You can manage preferences in your browser settings. Disabling cookies may affect some site functionality."] }, { heading: "Third-party tools", body: ["We may use third-party analytics or hosting tools that place cookies for operational or measurement purposes. These tools operate according to their own privacy policies."] }]} />} /><Route path="/disclaimer" component={() => <LegalPage title="Disclaimer" intro="The content on this website is intended for general information and promotional purposes only." sections={[{ heading: "No contractual commitment", body: ["Website information, project examples and service descriptions are illustrative and may not reflect the details of any individual project or client arrangement.", "No information on this website should be interpreted as a formal quotation, guarantee or contractual commitment unless agreed in writing."] }, { heading: "Accuracy", body: ["We do our best to keep the content accurate and up to date, but details may change without notice. Please confirm important project information directly with our team."] }, { heading: "Contact", body: ["If you are planning a project, we encourage you to contact us directly to discuss your scope, requirements, timeline and budget before making decisions based on website content."] }]} />} /><Route component={NotFound} /></Switch></main><Footer /></>;
 }
 
 export default App;
